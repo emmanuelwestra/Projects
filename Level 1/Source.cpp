@@ -95,7 +95,8 @@ std::vector<gamePieces>& boardSetup(int gameBoardSize) {
 	return board;
 }
 void changeGameState(std::vector<gamePieces>& gameBoard) {
-	int row=0, col=0;
+	int row {0};
+	int col {0};
 	bool end;
 	do {
 		std::string val; // temporary
@@ -122,11 +123,26 @@ void changeGameState(std::vector<gamePieces>& gameBoard) {
 	
 }
 bool isGameDone(const std::vector<gamePieces>& gameBoard) {
+	bool revealedMines {false};
+
 	return false; // test
 }
 
 int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, int gameBoardSize) {
-	return 1;
+	int count=0;
+	for(int move_row=-1; move_row<2; move_row++) {
+		for(int move_col=-1; move_col<2; move_col++) {
+			if(row+move_row < 0 || row+move_row > gameBoardSize-1 || column+move_col < 0 || column+move_col > gameBoardSize-1)
+				continue;
+			switch(gameBoard.at(boardIndex(row+move_row, column+move_col))) {
+				case gamePieces::hiddenMine:
+					count++;
+				case gamePieces::revealedMine:
+					count++;
+			}
+		}
+	}
+	return count;
 }
 int boardIndex(int row, int column) {
 	return row*gameBoardSize + column;
