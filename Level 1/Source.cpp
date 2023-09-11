@@ -9,7 +9,7 @@ enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
 
 /*GUI Functions*/
 void splashScreen();
-void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines = false, const int gameBoardSize);
+void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines = false);
 void displayGameDone(const std::vector<gamePieces>& gameBoard);
 
 /* Engine Functions*/
@@ -50,7 +50,7 @@ void splashScreen() {
 	std::cout << "Clear the minefield without hitting a mine!" << std::endl;
 	system("PAUSE");
 }
-void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines, const int gameBoardSize) {
+void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines) {
 	// LINE 1
 	std::cout << "   ";
 	for(int i=0; i<gameBoardSize; i++) {
@@ -61,7 +61,7 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 	for(int row=0; row<gameBoardSize; row++) {
 		std::cout << ('A'+row) << "| ";
 		for(int col=0; col<gameBoardSize; col++) {
-			switch(static_cast<int>(gameBoard.at(row*gameBoardSize+col))) {
+			switch(static_cast<int>(gameBoard.at(boardIndex(row, col)))) {
 				case static_cast<int>(gamePieces::hiddenEmpty):
 					std::cout << "-";
 					break;
@@ -85,7 +85,6 @@ void displayGameDone(const std::vector<gamePieces>& gameBoard) {
 
 /* Engine Functions*/
 std::vector<gamePieces>& boardSetup(int gameBoardSize) {
-	// random
     std::random_device seed;
     std::default_random_engine e(seed());
     std::bernoulli_distribution isMine(.25); // chance for a tile being a mine
@@ -96,6 +95,30 @@ std::vector<gamePieces>& boardSetup(int gameBoardSize) {
 	return board;
 }
 void changeGameState(std::vector<gamePieces>& gameBoard) {
+	int row=0, col=0;
+	bool end;
+	do {
+		std::string val; // temporary
+		do {
+			std::cout << "Enter a row & column (e.g A4) ";
+			std::cin >> val;
+			row=val[0]-'A';
+			col=val[1];
+		}
+		while(row<0 || row>gameBoardSize || col <0 || col>gameBoardSize);
+		end = true;
+		switch(gameBoard.at(boardIndex(row, col))) {
+			case gamePieces::hiddenEmpty:
+				gameBoard.at(boardIndex(row, col)) = gamePieces::revealedEmpty;
+				break;
+			case gamePieces::hiddenMine:
+				gameBoard.at(boardIndex(row, col)) = gamePieces::revealedMine;
+				break;
+			default:
+				end = false;
+		}
+	}
+	while(end);
 	
 }
 bool isGameDone(const std::vector<gamePieces>& gameBoard) {
@@ -106,5 +129,5 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, in
 	return 1;
 }
 int boardIndex(int row, int column) {
-	return 1;
+	return row*gameBoardSize + column;
 }
