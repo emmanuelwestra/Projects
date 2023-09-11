@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <string>
 #include <fstream>
 
 /*Game Constants*/
@@ -59,7 +60,7 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 	std::cout << std::endl;
 	// OTHER LINES
 	for(int row=0; row<gameBoardSize; row++) {
-		std::cout << ('A'+row) << "| ";
+		std::cout << char('A'+row) << "| ";
 		for(int col=0; col<gameBoardSize; col++) {
 			switch(static_cast<int>(gameBoard.at(boardIndex(row, col)))) {
 				case static_cast<int>(gamePieces::hiddenEmpty):
@@ -69,7 +70,7 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 					std::cout << countMines(row, col, gameBoard, gameBoardSize);
 					break;
 				case static_cast<int>(gamePieces::hiddenMine):
-					std::cout << revealMines? "*" : "-";
+					std::cout << (revealMines ? "*" : "-");
 					break;
 				case static_cast<int>(gamePieces::revealedMine):
 					std::cout << "*";
@@ -77,6 +78,7 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 			}
 			std::cout << " ";
 		}
+		std::cout << std::endl;
 	}
 }
 void displayGameDone(const std::vector<gamePieces>& gameBoard) {
@@ -88,23 +90,24 @@ std::vector<gamePieces>& boardSetup(int gameBoardSize) {
     std::random_device seed;
     std::default_random_engine e(seed());
     std::bernoulli_distribution isMine(.25); // chance for a tile being a mine
-	static std::vector<gamePieces> board(gameBoardSize);
+	static std::vector<gamePieces> board(gameBoardSize*gameBoardSize);
 	for(gamePieces piece: board) {
 		piece = isMine(e) ? gamePieces::hiddenMine : gamePieces::hiddenEmpty; 
 	}
 	return board;
 }
 void changeGameState(std::vector<gamePieces>& gameBoard) {
-	int row {0};
-	int col {0};
+	int row, col;
 	bool end;
 	do {
-		std::string val; // temporary
 		do {
-			std::cout << "Enter a row & column (e.g A4) ";
-			std::cin >> val;
-			row=val[0]-'A';
-			col=val[1];
+			std::cout << "Enter row: ";
+			std::cin >> row;
+			row -= 'A';
+			std::cout << std::endl;
+			std::cout << "Enter column: ";
+			std::cin >> col;
+			std::cout << "row=" << row << " col=" << col << std::endl;
 		}
 		while(row<0 || row>gameBoardSize || col <0 || col>gameBoardSize);
 		end = true;
@@ -139,6 +142,8 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, in
 					count++;
 				case gamePieces::revealedMine:
 					count++;
+				default: // empty
+					;
 			}
 		}
 	}
