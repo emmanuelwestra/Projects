@@ -4,16 +4,17 @@
 #include <string>
 #include <fstream>
 
-/*Game Constants*/
+// Game Constants
 const int gameBoardSize{ 10 };
 enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
 
-/*GUI Functions*/
+// GUI Functions
 void splashScreen();
 void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines = false);
 void displayGameDone(const std::vector<gamePieces>& gameBoard);
+void clear(); // clear output
 
-/* Engine Functions*/
+// Engine Functions
 std::vector<gamePieces>& boardSetup(int gameBoardSize);
 void changeGameState(std::vector<gamePieces>& gameBoard);
 bool isGameDone(const std::vector<gamePieces>& gameBoard);
@@ -23,23 +24,23 @@ int boardIndex(int row, int column);
 
 int main() {
 	char playAgain{ 'y' };
-	while (playAgain == 'y' || playAgain == 'Y')
-	{
+	while (playAgain == 'y' || playAgain == 'Y') {
 		std::vector<gamePieces>& gameBoard{ boardSetup(gameBoardSize) };
-		while (!isGameDone(gameBoard))
-		{
+		while (!isGameDone(gameBoard)) {
+			std::cout << "THIS IS A TEST" << std::endl;
 			displayGameState(gameBoard);
 			changeGameState(gameBoard);
 		}
 		displayGameDone(gameBoard);
 		std::cout << "\nDo you wish to play another game? (y/n): ";
 		std::cin >> playAgain;
-		
 	}
 }
 
-/*GUI Functions*/
+// GUI Functions
+////////////////////////////////////////////////////////////////////////////////
 void splashScreen() {
+	clear();
 	std::cout << "Mine Sweeper!" << std::endl;
 	std::cout << std::endl;
 	std::cout << "Your name here (2019)" << std::endl;
@@ -51,7 +52,9 @@ void splashScreen() {
 	std::cout << "Clear the minefield without hitting a mine!" << std::endl;
 	system("PAUSE");
 }
+
 void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines) {
+	clear();
 	// LINE 1
 	std::cout << "   ";
 	for(int i=0; i<gameBoardSize; i++) {
@@ -81,6 +84,7 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 		std::cout << std::endl;
 	}
 }
+
 void displayGameDone(const std::vector<gamePieces>& gameBoard) {
 	displayGameState(gameBoard, true);
 	bool isWin;
@@ -94,7 +98,8 @@ void displayGameDone(const std::vector<gamePieces>& gameBoard) {
 	std::cout << (isWin ? "CONGRATULATIONS!  You won!" : "Better luck next time!") << std::endl;
 }
 
-/* Engine Functions*/
+// Engine Functions
+////////////////////////////////////////////////////////////////////////////////
 std::vector<gamePieces>& boardSetup(int gameBoardSize) {
     std::random_device seed;
     std::default_random_engine e(seed());
@@ -105,6 +110,7 @@ std::vector<gamePieces>& boardSetup(int gameBoardSize) {
 	}
 	return board;
 }
+
 void changeGameState(std::vector<gamePieces>& gameBoard) {
 	int row, col;
 	bool end;
@@ -134,6 +140,7 @@ void changeGameState(std::vector<gamePieces>& gameBoard) {
 	while(end);
 	
 }
+
 bool isGameDone(const std::vector<gamePieces>& gameBoard) {
 	bool revealedMine { false };
 	bool hiddenEmpty { false };
@@ -169,6 +176,11 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, in
 	}
 	return count;
 }
+
 int boardIndex(int row, int column) {
 	return row*gameBoardSize + column;
+}
+
+void clear() {
+	// \033[2J to clear console; \033[H clears console and returns cursor to home (I had dissues with it clearing output, so I used both)
 }
