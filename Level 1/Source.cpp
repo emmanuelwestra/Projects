@@ -82,7 +82,16 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 	}
 }
 void displayGameDone(const std::vector<gamePieces>& gameBoard) {
-
+	displayGameState(gameBoard, true);
+	bool isWin;
+	for(gamePieces gamePiece: gameBoard) {
+		if(gamePiece == gamePieces::revealedMine) {
+			isWin = false;
+			goto RESULT; // break outer for
+		}
+	}
+	RESULT:
+	std::cout << (isWin ? "CONGRATULATIONS!  You won!" : "Better luck next time!") << std::endl;
 }
 
 /* Engine Functions*/
@@ -126,9 +135,20 @@ void changeGameState(std::vector<gamePieces>& gameBoard) {
 	
 }
 bool isGameDone(const std::vector<gamePieces>& gameBoard) {
-	bool revealedMines {false};
-
-	return false; // test
+	bool revealedMine { false };
+	bool hiddenEmpty { false };
+	for(gamePieces gamePiece: gameBoard) {
+		// NOTE: SWITCH USED FOR PERFORMANCE
+		switch(gamePiece) {
+			case gamePieces::revealedMine:
+				return false; // return false from function as there is a revealed mine
+			case gamePieces::hiddenEmpty:
+				hiddenEmpty = true;
+			default:
+				; // empty
+		}
+	}
+	return hiddenEmpty; // if false, then there are empty spaces; if true, then there are no revealed mines & hidden spaces
 }
 
 int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, int gameBoardSize) {
@@ -142,8 +162,8 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, in
 					count++;
 				case gamePieces::revealedMine:
 					count++;
-				default: // empty
-					;
+				default:
+					; // empty
 			}
 		}
 	}
