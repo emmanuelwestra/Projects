@@ -95,7 +95,7 @@ void displayGameDone(const std::vector<gamePieces>& gameBoard) {
 		}
 	}
 	RESULT:
-	std::cout << (isWin ? "CONGRATULATIONS!  You won!" : "Better luck next time!") << std::endl;
+	std::cout << (isWin ? "CONGRATULATIONS!  YOU WON!" : "Better luck next time!") << std::endl;
 }
 
 // Engine Functions
@@ -112,19 +112,22 @@ std::vector<gamePieces>& boardSetup(int gameBoardSize) {
 }
 
 void changeGameState(std::vector<gamePieces>& gameBoard) {
-	int row, col;
+	int row;
+	int col;
 	bool end;
 	do {
 		do {
 			std::cout << "Enter row: ";
-			std::cin >> row;
-			row -= 'A';
-			std::cout << std::endl;
+			char row_let;
+			std::cin >> row_let;
+			row_let = std::toupper(row_let); // convert to upper case
+			row_let -= 'A'; // correction
+			row = row_let;
 			std::cout << "Enter column: ";
 			std::cin >> col;
-			std::cout << "row=" << row << " col=" << col << std::endl;
+			--col;
 		}
-		while(row<0 || row>gameBoardSize || col <0 || col>gameBoardSize);
+		while(row<0 || row>gameBoardSize || col <0 || col>gameBoardSize); // must be 
 		end = true;
 		switch(gameBoard.at(boardIndex(row, col))) {
 			case gamePieces::hiddenEmpty:
@@ -134,28 +137,27 @@ void changeGameState(std::vector<gamePieces>& gameBoard) {
 				gameBoard.at(boardIndex(row, col)) = gamePieces::revealedMine;
 				break;
 			default:
+				std::cout << (gameBoard.at(boardIndex(row, col))==gamePieces::revealedEmpty ? "Contains empty" : "Contains mine") << std::endl;
 				end = false;
 		}
 	}
-	while(end);
-	
+	while(!end);
 }
 
 bool isGameDone(const std::vector<gamePieces>& gameBoard) {
-	bool revealedMine { false };
 	bool hiddenEmpty { false };
 	for(gamePieces gamePiece: gameBoard) {
 		// NOTE: SWITCH USED FOR PERFORMANCE
 		switch(gamePiece) {
 			case gamePieces::revealedMine:
-				return false; // return false from function as there is a revealed mine
+				return true; // player failed
 			case gamePieces::hiddenEmpty:
 				hiddenEmpty = true;
 			default:
 				; // empty
 		}
 	}
-	return hiddenEmpty; // if false, then there are empty spaces; if true, then there are no revealed mines & hidden spaces
+	return !hiddenEmpty; // if false, then there are empty spaces; if true, then there are no revealed mines & hidden spaces
 }
 
 int countMines(int row, int column, const std::vector<gamePieces>& gameBoard, int gameBoardSize) {
@@ -183,4 +185,5 @@ int boardIndex(int row, int column) {
 
 void clear() {
 	// \033[2J to clear console; \033[H clears console and returns cursor to home (I had dissues with it clearing output, so I used both)
+	std::cout << "\033[2J\033[H";
 }
