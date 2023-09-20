@@ -209,11 +209,9 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard) {
 				case gamePieces::hiddenMine:
 					count++;
 					break;
-					std::cout << "hiddenMine" << std::endl;
 				case gamePieces::revealedMine:
 					count++;
 					break;
-					std::cout << "revealedMine" << std::endl;
 				default:
 					break;
 			}
