@@ -5,10 +5,12 @@
 #include <fstream>
 
 // Game Constants
-const int gameBoardSize{ 10 };
-const enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
+int gameBoardSize;
+float chanceMined;
+enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
 
 // GUI Functions
+void difficulty();
 void splashScreen();
 void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines = false);
 void displayGameDone(const std::vector<gamePieces>& gameBoard);
@@ -24,6 +26,9 @@ int boardIndex(int row, int column);
 
 int main() {
 	splashScreen();
+	clear();
+	difficulty();
+
 	char playAgain{ 'y' };
 	while (playAgain == 'y' || playAgain == 'Y') {
 		std::vector<gamePieces> gameBoard = boardSetup(gameBoardSize);
@@ -59,7 +64,13 @@ void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines
 	// LINE 1
 	std::cout << "   ";
 	for(int i=0; i<gameBoardSize; i++) {
-		std::cout << (i+1) << " ";
+		if(i>8) { // (i+1) >= 10
+			std::cout << static_cast<char>('A'+i-9);
+		}
+		else {
+			std::cout << i+1;
+		}
+		std::cout << " ";
 	}
 	std::cout << std::endl;
 	// OTHER LINES
@@ -101,10 +112,36 @@ void displayGameDone(const std::vector<gamePieces>& gameBoard) {
 
 // Engine Functions
 ////////////////////////////////////////////////////////////////////////////////
+void difficulty() {
+	char *choice = new char;
+	do {
+		std::cout << "Choose (e)asy [10x10, 25% mined], (m)edium [20x20 30% mined], (h)ard [30x30, 40% mined]: ";
+		std::cin >> *choice;
+		*choice = char(tolower(*choice));
+	}
+	while(*choice != 'e' && *choice != 'm' && *choice != 'h');
+	switch(*choice) {
+		case 'e':
+			gameBoardSize = 10;
+			chanceMined = 0.25f;
+			return;
+		case 'm':
+			gameBoardSize = 20;
+			chanceMined = 0.3f;
+			return;
+		case 'h':
+			gameBoardSize = 30;
+			chanceMined = 0.4f;
+			return;
+		default:
+			return;
+	}
+}
+
 std::vector<gamePieces> boardSetup(int gameBoardSize) {
     std::random_device seed;
     std::default_random_engine e(seed());
-    std::bernoulli_distribution isMine(.25); // chance for a tile being a mine
+    std::bernoulli_distribution isMine(chanceMined); // chance for a tile being a mine
 	std::vector<gamePieces> board(gameBoardSize*gameBoardSize);
 	for(int i=0; i<board.size(); i++) {
 		board.at(i) = isMine(e) ? gamePieces::hiddenMine : gamePieces::hiddenEmpty;
