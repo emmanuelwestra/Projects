@@ -6,7 +6,7 @@
 
 // Game Constants
 const int gameBoardSize{ 10 };
-enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
+const enum class gamePieces { hiddenEmpty, revealedEmpty, hiddenMine, revealedMine };
 
 // GUI Functions
 void splashScreen();
@@ -23,11 +23,11 @@ int countMines(int row, int column, const std::vector<gamePieces>& gameBoard);
 int boardIndex(int row, int column);
 
 int main() {
+	splashScreen();
 	char playAgain{ 'y' };
 	while (playAgain == 'y' || playAgain == 'Y') {
 		std::vector<gamePieces> gameBoard = boardSetup(gameBoardSize);
 		while (!isGameDone(gameBoard)) {
-			std::cout << "THIS IS A TEST" << std::endl;
 			displayGameState(gameBoard);
 			changeGameState(gameBoard);
 		}
@@ -43,14 +43,15 @@ void splashScreen() {
 	clear();
 	std::cout << "Mine Sweeper!" << std::endl;
 	std::cout << std::endl;
-	std::cout << "Your name here (2019)" << std::endl;
+	std::cout << "Emmanuel Westra (2023)" << std::endl;
 	std::cout << "CPSC 2377, Game Programming, Quest 0" << std::endl;
 	std::cout << "UALR, Computer Science Dept." << std::endl;
 	std::cout << std::endl;
 	std::cout << "INSTRUCTIONS:" << std::endl;
-	std::cout << std::endl;
 	std::cout << "Clear the minefield without hitting a mine!" << std::endl;
-	system("PAUSE");
+	std::cout << "A number will identify the number of mines surrounding it (0-9)." << std::endl;
+	std::cout << "Press any key to continue: ";
+	std::cin.get();
 }
 
 void displayGameState(const std::vector<gamePieces>& gameBoard, bool revealMines) {

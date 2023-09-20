@@ -68,6 +68,8 @@
         "numeric": "cpp",
         "random": "cpp",
         "algorithm": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__tree": "cpp",
+        "map": "cpp"
     }
 }
